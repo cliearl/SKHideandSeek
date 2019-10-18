@@ -13,9 +13,11 @@ class GameScene: SKScene {
     
     // 시스템 컨테이너
     let gridMap = SKNode()
+    let cameraNode = SKCameraNode()
     
     override func didMove(to view: SKView) {
         setupMap()
+        setupCamera()
     }
     
     func setupMap() {
@@ -35,12 +37,12 @@ class GameScene: SKScene {
         // 바닥 생성
         let bottomLayer = SKTileMapNode(tileSet: tileSet, columns: columns, rows: rows, tileSize: tileSize)
         bottomLayer.fill(with: sandTiles)
-        bottomLayer.zPosition = 1
+        bottomLayer.zPosition = Layer.mapBottom
         gridMap.addChild(bottomLayer)
         
         // 탑 레이어 생성
         let topLayer = SKTileMapNode(tileSet: tileSet, columns: columns, rows: rows, tileSize: tileSize)
-        topLayer.zPosition = 2
+        topLayer.zPosition = Layer.mapTop
         topLayer.enableAutomapping = true
         gridMap.addChild(topLayer)
         
@@ -67,6 +69,17 @@ class GameScene: SKScene {
             }
         }
         
+    }
+    
+    func setupCamera() {
+        self.camera = cameraNode
+        cameraNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        cameraNode.setScale(0.1)
+        cameraNode.zPosition = Layer.camera
+        self.addChild(cameraNode)
         
+        let cameraScale = SKAction.scale(by: 5, duration: 1.5)
+        cameraScale.timingMode = .easeInEaseOut
+        cameraNode.run(cameraScale)
     }
 }
