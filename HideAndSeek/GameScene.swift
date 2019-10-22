@@ -14,10 +14,19 @@ class GameScene: SKScene {
     // 시스템 컨테이너
     let gridMap = SKNode()
     let cameraNode = SKCameraNode()
+    let timeLabel = SKLabelNode(text: "0 sec")
+    var lastUpdateTime: TimeInterval = -1
+    var startTime = TimeInterval()
+    var elapsedTime = 0 {
+        didSet {
+            timeLabel.text = "\(elapsedTime) sec"
+        }
+    }
     
     override func didMove(to view: SKView) {
         setupMap()
         setupCamera()
+        setupTimeLabel()
     }
     
     func setupMap() {
@@ -81,5 +90,23 @@ class GameScene: SKScene {
         let cameraScale = SKAction.scale(by: 5, duration: 1.5)
         cameraScale.timingMode = .easeInEaseOut
         cameraNode.run(cameraScale)
+    }
+    
+    func setupTimeLabel() {
+        timeLabel.fontName = "AppleGothic"
+        timeLabel.fontSize = 60
+        timeLabel.fontColor = SKColor.white
+        timeLabel.horizontalAlignmentMode = .right
+        timeLabel.position = CGPoint(x: 80, y: frame.midY - 100)
+        cameraNode.addChild(timeLabel)
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        if (self.lastUpdateTime < 0) {
+            self.lastUpdateTime = currentTime
+            self.startTime = currentTime
+        }
+        self.lastUpdateTime = currentTime
+        self.elapsedTime = Int(lastUpdateTime - startTime)
     }
 }
