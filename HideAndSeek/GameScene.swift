@@ -11,6 +11,12 @@ import GameplayKit
 
 class GameScene: SKScene {
     
+    // MARK: - 초기 설정
+    // 객체 컨테이너
+    var obstacles = [SKSpriteNode]()
+    var goal = SKSpriteNode()
+
+    
     // 시스템 컨테이너
     let gridMap = SKNode()
     let cameraNode = SKCameraNode()
@@ -23,10 +29,13 @@ class GameScene: SKScene {
         }
     }
     
+    
     override func didMove(to view: SKView) {
         setupMap()
-        setupCamera()
+//        setupCamera()
         setupTimeLabel()
+        createGoal()
+        createObstacles()
     }
     
     func setupMap() {
@@ -36,7 +45,7 @@ class GameScene: SKScene {
         // 기초정보 초기화
         guard let tileSet = SKTileSet(named: "Sample Grid Tile Set") else { return }
         let tileSize = CGSize(width: 128, height: 128)
-        let columns = 12
+        let columns = 16
         let rows = 16
         
         let sandTiles = tileSet.tileGroups.first { $0.name == "Sand" }
@@ -99,6 +108,48 @@ class GameScene: SKScene {
         timeLabel.horizontalAlignmentMode = .right
         timeLabel.position = CGPoint(x: 80, y: frame.midY - 100)
         cameraNode.addChild(timeLabel)
+    }
+    
+    func createGoal() {
+        let texture = SpriteAtlas.textureNamed("goal")
+        goal = SKSpriteNode(texture: texture)
+        
+        let position = [CGPoint(x: 0, y: 0),
+                        CGPoint(x: size.width - goal.size.width, y: 0),
+                        CGPoint(x: 0, y: size.height - goal.size.height),
+                        CGPoint(x: size.width - goal.size.width,
+                                y: size.height - goal.size.height)]
+        let random = GKRandomDistribution(lowestValue: 0, highestValue: position.count - 1).nextInt()
+        goal.anchorPoint = CGPoint.zero
+        goal.position = position[random]
+        goal.zPosition = Layer.object
+        
+        self.addChild(goal)
+    }
+    
+    func createObstacles() {
+        while obstacles.count < 10 {
+            let texture = SpriteAtlas.textureNamed("obstacle")
+            let obstacle = SKSpriteNode(texture: texture)
+            let position = CGPoint(x: CGFloat(GKRandomDistribution(lowestValue: 64, highestValue: Int(size.width) - 64).nextInt()), y: CGFloat(GKRandomDistribution(lowestValue: 64, highestValue: Int(size.height) - 64).nextInt()))
+            let isObstacleOverlapped = obstacles.contains {
+                let dx = position.x - $0.position.x
+                let dy = position.y - $0.position.y
+                let distance = sqrt(dx*dx + dy*dy)
+                if distance < obstacle.size.width * 2 {
+                    return true
+                }
+                return false
+            }
+            
+            if isObstacleOverlapped { continue }
+            
+            obstacle.position = position
+            obstacle.zPosition = Layer.object
+            
+            self.addChild(obstacle)
+            obstacles.append(obstacle)
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {

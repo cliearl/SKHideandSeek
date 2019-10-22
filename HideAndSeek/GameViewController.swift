@@ -25,8 +25,9 @@ class GameViewController: UIViewController {
 //                view.presentScene(scene)
 //            }
             
-            let scene = GameScene(size: CGSize(width: 1536, height: 2048))
-            scene.scaleMode = .aspectFill
+            let scene = GameScene(size: CGSize(width: 2048, height: 2048))
+//            scene.scaleMode = .aspectFill
+            scene.scaleMode = .aspectFit
             
             view.presentScene(scene)
             view.ignoresSiblingOrder = true
