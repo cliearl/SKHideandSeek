@@ -16,6 +16,7 @@
 		60BA3E732359564300E9CAA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 60BA3E712359564300E9CAA5 /* LaunchScreen.storyboard */; };
 		60BA3E7B2359579F00E9CAA5 /* TileSet.sks in Resources */ = {isa = PBXBuildFile; fileRef = 60BA3E7A2359579F00E9CAA5 /* TileSet.sks */; };
 		60BA3E7D2359628100E9CAA5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BA3E7C2359628100E9CAA5 /* Constants.swift */; };
+		60DF2710236000E400D358F4 /* Fire.sks in Resources */ = {isa = PBXBuildFile; fileRef = 60DF270F236000E400D358F4 /* Fire.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		60BA3E742359564300E9CAA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		60BA3E7A2359579F00E9CAA5 /* TileSet.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = TileSet.sks; sourceTree = "<group>"; };
 		60BA3E7C2359628100E9CAA5 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		60DF270F236000E400D358F4 /* Fire.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Fire.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +67,7 @@
 				60BA3E622359564200E9CAA5 /* AppDelegate.swift */,
 				60BA3E642359564200E9CAA5 /* GameScene.sks */,
 				60BA3E7A2359579F00E9CAA5 /* TileSet.sks */,
+				60DF270F236000E400D358F4 /* Fire.sks */,
 				60BA3E682359564200E9CAA5 /* GameScene.swift */,
 				60BA3E6A2359564200E9CAA5 /* GameViewController.swift */,
 				60BA3E6C2359564200E9CAA5 /* Main.storyboard */,
@@ -137,6 +140,7 @@
 				60BA3E6E2359564200E9CAA5 /* Main.storyboard in Resources */,
 				60BA3E652359564200E9CAA5 /* GameScene.sks in Resources */,
 				60BA3E702359564300E9CAA5 /* Assets.xcassets in Resources */,
+				60DF2710236000E400D358F4 /* Fire.sks in Resources */,
 				60BA3E732359564300E9CAA5 /* LaunchScreen.storyboard in Resources */,
 				60BA3E7B2359579F00E9CAA5 /* TileSet.sks in Resources */,
 			);

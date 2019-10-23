@@ -11,8 +11,11 @@ import SpriteKit
 let SpriteAtlas = SKTextureAtlas(named: "Sprites")
 
 struct Layer {
+    static let upper: CGFloat = 0.1
     static let mapBottom: CGFloat = 0
     static let mapTop: CGFloat = 1
     static let object: CGFloat = 2
+    static let player: CGFloat = 3
+    static let light: CGFloat = 10
     static let camera: CGFloat = 20
 }

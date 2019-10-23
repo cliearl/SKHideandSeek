@@ -15,6 +15,7 @@ class GameScene: SKScene {
     // 객체 컨테이너
     var obstacles = [SKSpriteNode]()
     var goal = SKSpriteNode()
+    var player = SKSpriteNode()
 
     
     // 시스템 컨테이너
@@ -32,9 +33,10 @@ class GameScene: SKScene {
     
     override func didMove(to view: SKView) {
         setupMap()
-//        setupCamera()
+        setupCamera()
         setupTimeLabel()
         createGoal()
+        createPlayer()
         createObstacles()
     }
     
@@ -56,12 +58,14 @@ class GameScene: SKScene {
         let bottomLayer = SKTileMapNode(tileSet: tileSet, columns: columns, rows: rows, tileSize: tileSize)
         bottomLayer.fill(with: sandTiles)
         bottomLayer.zPosition = Layer.mapBottom
+        bottomLayer.lightingBitMask = 1
         gridMap.addChild(bottomLayer)
         
         // 탑 레이어 생성
         let topLayer = SKTileMapNode(tileSet: tileSet, columns: columns, rows: rows, tileSize: tileSize)
         topLayer.zPosition = Layer.mapTop
         topLayer.enableAutomapping = true
+        topLayer.lightingBitMask = 1
         gridMap.addChild(topLayer)
         
         // 랜덤 맵 생성
@@ -142,14 +146,49 @@ class GameScene: SKScene {
                 return false
             }
             
-            if isObstacleOverlapped { continue }
+            let dx = position.x - player.position.x
+            let dy = position.y - player.position.y
+            let isPlayerOverlapped = sqrt(dx*dx + dy*dy) < player.size.width * 2
+            if isObstacleOverlapped || isPlayerOverlapped { continue }
             
             obstacle.position = position
             obstacle.zPosition = Layer.object
             
+            obstacle.lightingBitMask = 1
+            obstacle.shadowCastBitMask = 1
+            obstacle.shadowedBitMask = 1
+            
             self.addChild(obstacle)
             obstacles.append(obstacle)
         }
+    }
+    
+    func createPlayer() {
+        let texture = SpriteAtlas.textureNamed("player")
+        player = SKSpriteNode(texture: texture)
+        player.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        player.zPosition = Layer.player
+        
+        player.lightingBitMask = 1
+        player.shadowCastBitMask = 1
+        player.shadowedBitMask = 1
+        
+        self.addChild(player)
+        
+        // 횃불 이펙트
+        guard let fire = SKEmitterNode(fileNamed: "Fire") else { return }
+        let fireEffect = SKEffectNode()
+        fireEffect.position = CGPoint(x: -20, y: -30)
+        fireEffect.zPosition = Layer.upper
+        fireEffect.addChild(fire)
+        player.addChild(fireEffect)
+        
+        // 광원효과
+        let torchLight = SKLightNode()
+        torchLight.position = CGPoint(x: -20, y: -30)
+        torchLight.zPosition = Layer.light
+        torchLight.falloff = 2
+        player.addChild(torchLight)
     }
     
     override func update(_ currentTime: TimeInterval) {
