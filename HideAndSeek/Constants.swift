@@ -16,10 +16,12 @@ struct Layer {
     static let mapTop: CGFloat = 1
     static let object: CGFloat = 2
     static let player: CGFloat = 3
+    static let enemy: CGFloat = 4
     static let light: CGFloat = 10
     static let camera: CGFloat = 20
 }
 
 struct PhysicsCategory {
     static let player: UInt32 = 0x1 << 0  // 1
+    static let enemy: UInt32 = 0x1 << 1 // 2
 }

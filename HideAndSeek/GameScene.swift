@@ -16,6 +16,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var obstacles = [SKSpriteNode]()
     var goal = SKSpriteNode()
     var player = SKSpriteNode()
+    var enemies = [SKSpriteNode]()
+    var enemyTimer = Timer()
+    var enemyInterval: TimeInterval = 5.0
 
     var tileMap: SKTileMapNode!
     var playerSpeed: CGFloat = 160
@@ -46,6 +49,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createGoal()
         createPlayer()
         createObstacles()
+//        createEnemy()
+        
+        enemyTimer = Timer.scheduledTimer(withTimeInterval: enemyInterval, repeats: true) { _ in
+            self.createEnemy()
+        }
     }
     
     func setupMap() {
@@ -202,6 +210,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         torchLight.falloff = 2
         torchLight.isEnabled = false
         player.addChild(torchLight)
+    }
+    
+    func createEnemy() {
+        if enemies.count < 30 {
+            let texture = SpriteAtlas.textureNamed("enemy")
+            let enemy = SKSpriteNode(texture: texture)
+            
+            var isPlayerOverlapped = false
+            repeat {
+                let position = CGPoint(x: CGFloat(GKRandomDistribution(lowestValue: 100, highestValue: Int(size.width) - 100).nextInt()), y: CGFloat(GKRandomDistribution(lowestValue: 100, highestValue: Int(size.height) - 100).nextInt()))
+                let dx = position.x - player.position.x
+                let dy = position.y - player.position.y
+                isPlayerOverlapped = sqrt(dx*dx - dy*dy) < player.size.width * 2
+                
+                enemy.position = position
+            } while isPlayerOverlapped
+            
+            enemy.zPosition = Layer.enemy
+            enemy.physicsBody = SKPhysicsBody(rectangleOf: texture.size())
+            enemy.physicsBody?.categoryBitMask = PhysicsCategory.enemy
+            
+            enemy.lightingBitMask = 1
+            enemy.shadowCastBitMask = 1
+            enemy.shadowedBitMask = 1
+            
+            enemies.append(enemy)
+            self.addChild(enemy)
+        }
     }
     
     
