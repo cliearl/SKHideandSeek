@@ -9,7 +9,7 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: - 초기 설정
     // 객체 컨테이너
@@ -17,6 +17,8 @@ class GameScene: SKScene {
     var goal = SKSpriteNode()
     var player = SKSpriteNode()
 
+    var tileMap: SKTileMapNode!
+    var playerSpeed: CGFloat = 160
     
     // 시스템 컨테이너
     let gridMap = SKNode()
@@ -29,9 +31,15 @@ class GameScene: SKScene {
             timeLabel.text = "\(elapsedTime) sec"
         }
     }
+    var touch: CGPoint? = nil
     
     
     override func didMove(to view: SKView) {
+        
+        physicsWorld.contactDelegate = self
+        physicsWorld.gravity = CGVector.zero
+        self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
+        
         setupMap()
         setupCamera()
         setupTimeLabel()
@@ -91,6 +99,7 @@ class GameScene: SKScene {
             }
         }
         
+        self.tileMap = topLayer
     }
     
     func setupCamera() {
@@ -173,6 +182,9 @@ class GameScene: SKScene {
         player.shadowCastBitMask = 1
         player.shadowedBitMask = 1
         
+        player.physicsBody = SKPhysicsBody(texture: texture, size: texture.size())
+        player.physicsBody?.categoryBitMask = PhysicsCategory.player
+        
         self.addChild(player)
         
         // 횃불 이펙트
@@ -188,8 +200,46 @@ class GameScene: SKScene {
         torchLight.position = CGPoint(x: -20, y: -30)
         torchLight.zPosition = Layer.light
         torchLight.falloff = 2
+        torchLight.isEnabled = false
         player.addChild(torchLight)
     }
+    
+    
+    // MARK: - 객체 움직임
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touch = touches.first?.location(in: self)
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touch = touches.first?.location(in: self)
+    }
+    
+    func updatePlayer() {
+        guard let touchPosition = touch else { return }
+        let currentPosition = player.position
+        if shouldMove(currentPosition: currentPosition, touchPosition: touchPosition) {
+            moveObject(for: player, to: touchPosition, speed: playerSpeed)
+        } else {
+            player.physicsBody?.isResting = true
+        }
+    }
+    
+    func shouldMove(currentPosition: CGPoint, touchPosition: CGPoint) -> Bool {
+        return abs(currentPosition.x - touchPosition.x) > player.size.width / 4 || abs(currentPosition.y - touchPosition.y) > player.size.height / 4
+    }
+    
+    func moveObject(for sprite: SKSpriteNode, to target: CGPoint, speed: CGFloat) {
+        let angle = atan2(target.y - sprite.position.y,
+                          target.x - sprite.position.x)
+        let rotateAction = SKAction.rotate(toAngle: angle + (CGFloat.pi / 2), duration: 0.1)
+        sprite.run(rotateAction)
+        
+        let velocityX = speed * cos(angle)
+        let velocityY = speed * sin(angle)
+        let newVelocity = CGVector(dx: velocityX, dy: velocityY)
+        sprite.physicsBody?.velocity = newVelocity
+    }
+    
     
     override func update(_ currentTime: TimeInterval) {
         if (self.lastUpdateTime < 0) {
@@ -198,5 +248,27 @@ class GameScene: SKScene {
         }
         self.lastUpdateTime = currentTime
         self.elapsedTime = Int(lastUpdateTime - startTime)
+        
+        let position = CGPoint(x: player.position.x - size.width / 2,
+                               y: player.position.y - size.height / 2)
+        let column = tileMap.tileColumnIndex(fromPosition: position)
+        let row = tileMap.tileRowIndex(fromPosition: position)
+        let tile = tileMap.tileDefinition(atColumn: column, row: row)
+        if tile == nil {
+//            print("sand")
+            playerSpeed = 100
+        } else if (tile?.name?.contains("Water"))! {
+//            print("water")
+            playerSpeed = 40
+        } else if (tile?.name?.contains("Cobblestone"))! {
+//            print("stone")
+            playerSpeed = 160
+        }
+        print(playerSpeed)
+        
+        updatePlayer()
+        
+        cameraNode.position = player.position
+        cameraNode.run(SKAction.move(to: CGPoint(x: player.position.x, y: player.position.y), duration: 0.2))
     }
 }

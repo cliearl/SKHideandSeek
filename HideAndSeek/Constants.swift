@@ -19,3 +19,7 @@ struct Layer {
     static let light: CGFloat = 10
     static let camera: CGFloat = 20
 }
+
+struct PhysicsCategory {
+    static let player: UInt32 = 0x1 << 0  // 1
+}
