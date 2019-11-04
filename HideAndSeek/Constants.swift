@@ -25,3 +25,8 @@ struct PhysicsCategory {
     static let player: UInt32 = 0x1 << 0  // 1
     static let enemy: UInt32 = 0x1 << 1 // 2
 }
+
+struct Sound {
+    static let bgm = "bgm.mp3"
+    static let enemy = "enemy.mp3"
+}

@@ -228,6 +228,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.addChild(player)
         
+        self.listener = player
+        let bgmPlayer = SKAudioNode(fileNamed: Sound.bgm)
+        player.addChild(bgmPlayer)
+        
         // 횃불 이펙트
         guard let fire = SKEmitterNode(fileNamed: "Fire") else { return }
         let fireEffect = SKEffectNode()
@@ -249,7 +253,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func createEnemy() {
-        if enemies.count < 30 {
+        if enemies.count < 1 {
             let texture = SpriteAtlas.textureNamed("enemy")
             let enemy = SKSpriteNode(texture: texture)
             
@@ -273,6 +277,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             enemies.append(enemy)
             self.addChild(enemy)
+            
+            let audioNode = SKAudioNode(fileNamed: Sound.enemy)
+            enemy.addChild(audioNode)
             
             // GKAgent 셋업
             let enemyAgent = GKAgent2D()
@@ -347,7 +354,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ruleSystem.evaluate()
         let speed = ruleSystem.grade(forFact: NSString(string: "enemySpeed"))
         enemySpeed += CGFloat(speed)
-        print(enemySpeed)
+//        print(enemySpeed)
         
         
         // 맵 형태에 따른 스피드 변경

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		607AC811236FE08F00A099D6 /* bgm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 607AC80F236FE08F00A099D6 /* bgm.mp3 */; };
+		607AC812236FE08F00A099D6 /* enemy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 607AC810236FE08F00A099D6 /* enemy.mp3 */; };
 		60BA3E632359564200E9CAA5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BA3E622359564200E9CAA5 /* AppDelegate.swift */; };
 		60BA3E652359564200E9CAA5 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 60BA3E642359564200E9CAA5 /* GameScene.sks */; };
 		60BA3E692359564200E9CAA5 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BA3E682359564200E9CAA5 /* GameScene.swift */; };
@@ -20,6 +22,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		607AC80F236FE08F00A099D6 /* bgm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bgm.mp3; sourceTree = "<group>"; };
+		607AC810236FE08F00A099D6 /* enemy.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = enemy.mp3; sourceTree = "<group>"; };
 		60BA3E5F2359564200E9CAA5 /* HideAndSeek.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HideAndSeek.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60BA3E622359564200E9CAA5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60BA3E642359564200E9CAA5 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -45,6 +49,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		607AC813236FE09400A099D6 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				607AC80F236FE08F00A099D6 /* bgm.mp3 */,
+				607AC810236FE08F00A099D6 /* enemy.mp3 */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
 		60BA3E562359564200E9CAA5 = {
 			isa = PBXGroup;
 			children = (
@@ -64,6 +77,7 @@
 		60BA3E612359564200E9CAA5 /* HideAndSeek */ = {
 			isa = PBXGroup;
 			children = (
+				607AC813236FE09400A099D6 /* Sounds */,
 				60BA3E622359564200E9CAA5 /* AppDelegate.swift */,
 				60BA3E642359564200E9CAA5 /* GameScene.sks */,
 				60BA3E7A2359579F00E9CAA5 /* TileSet.sks */,
@@ -142,7 +156,9 @@
 				60BA3E702359564300E9CAA5 /* Assets.xcassets in Resources */,
 				60DF2710236000E400D358F4 /* Fire.sks in Resources */,
 				60BA3E732359564300E9CAA5 /* LaunchScreen.storyboard in Resources */,
+				607AC812236FE08F00A099D6 /* enemy.mp3 in Resources */,
 				60BA3E7B2359579F00E9CAA5 /* TileSet.sks in Resources */,
+				607AC811236FE08F00A099D6 /* bgm.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
