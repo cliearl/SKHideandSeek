@@ -42,6 +42,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let playerAgent = GKAgent2D()
     var enemyAgents = [GKAgent2D]()
     var polygonObstacles = [GKPolygonObstacle]()
+    let ruleSystem = GKRuleSystem()
     
     var deltaTime: TimeInterval = 0
     let nodeSpeed = 5.0
@@ -54,8 +55,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
         
         setupMap()
-//        setupCamera()
+        setupCamera()
         setupTimeLabel()
+        setupRule()
         createGoal()
         createPlayer()
         createObstacles()
@@ -139,6 +141,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         timeLabel.horizontalAlignmentMode = .right
         timeLabel.position = CGPoint(x: 80, y: frame.midY - 100)
         cameraNode.addChild(timeLabel)
+    }
+    
+    func setupRule() {
+        self.ruleSystem.add([
+            GKRule(predicate: NSPredicate(format: "$time != 0 && modulus:by:($time, 15) = 0"), assertingFact: NSString(string: "enemySpeed"), grade: 0.5),
+            GKRule(predicate: NSPredicate(format: "$enemyCount > 10"), retractingFact: NSString(string: "enemySpeed"), grade: 0.1),
+            GKRule(predicate: NSPredicate(format: "$enemyCount > 20"), retractingFact: NSString(string: "enemySpeed"), grade: 0.2)
+            ]
+        )
     }
     
     func createGoal() {
@@ -328,6 +339,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.lastUpdateTime = currentTime
         self.elapsedTime = Int(lastUpdateTime - startTime)
         
+        
+        // 룰 시스템 평가
+        ruleSystem.state["time"] = elapsedTime
+        ruleSystem.state["enemyCount"] = enemies.count
+        ruleSystem.reset()
+        ruleSystem.evaluate()
+        let speed = ruleSystem.grade(forFact: NSString(string: "enemySpeed"))
+        enemySpeed += CGFloat(speed)
+        print(enemySpeed)
+        
+        
+        // 맵 형태에 따른 스피드 변경
         let position = CGPoint(x: player.position.x - size.width / 2,
                                y: player.position.y - size.height / 2)
         let column = tileMap.tileColumnIndex(fromPosition: position)
