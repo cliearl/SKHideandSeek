@@ -22,6 +22,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     var tileMap: SKTileMapNode!
     var playerSpeed: CGFloat = 160
+    var enemySpeed: CGFloat = 50
     
     // 시스템 컨테이너
     let gridMap = SKNode()
@@ -36,6 +37,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     var touch: CGPoint? = nil
     
+    // 에이전트 시스템 가동용 컨테이너
+    let agentSystem = GKComponentSystem(componentClass: GKAgent2D.self)
+    let playerAgent = GKAgent2D()
+    var enemyAgents = [GKAgent2D]()
+    var polygonObstacles = [GKPolygonObstacle]()
+    
+    var deltaTime: TimeInterval = 0
+    let nodeSpeed = 5.0
+    
     
     override func didMove(to view: SKView) {
         
@@ -44,7 +54,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
         
         setupMap()
-        setupCamera()
+//        setupCamera()
         setupTimeLabel()
         createGoal()
         createPlayer()
@@ -177,6 +187,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             self.addChild(obstacle)
             obstacles.append(obstacle)
+            
+            
+            let pos = obstacle.position
+            let halfX = obstacle.size.width / 2
+            let halfY = obstacle.size.height / 2
+            let polygonObstacle = GKPolygonObstacle(points: [
+                vector2(Float(pos.x - halfX), Float(pos.y + halfY)),
+                vector2(Float(pos.x + halfX), Float(pos.y + halfY)),
+                vector2(Float(pos.x + halfX), Float(pos.y - halfY)),
+                vector2(Float(pos.x - halfX), Float(pos.y - halfY))
+            ])
+            polygonObstacles.append(polygonObstacle)
         }
     }
     
@@ -210,6 +232,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         torchLight.falloff = 2
         torchLight.isEnabled = false
         player.addChild(torchLight)
+        
+        playerAgent.position = vector2(Float(player.position.x), Float(player.position.y))
+        playerAgent.delegate = self
     }
     
     func createEnemy() {
@@ -237,6 +262,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             enemies.append(enemy)
             self.addChild(enemy)
+            
+            // GKAgent 셋업
+            let enemyAgent = GKAgent2D()
+            enemyAgent.maxAcceleration = 100
+            enemyAgent.maxSpeed = 50
+            enemyAgent.position = vector2(Float(enemy.position.x), Float(enemy.position.y))
+            enemyAgent.delegate = self
+            
+            enemyAgent.behavior = GKBehavior(goals: [
+                GKGoal(toWander: 1.0),
+                GKGoal(toSeekAgent: playerAgent),
+                GKGoal(toAvoid: polygonObstacles, maxPredictionTime: 0.1)
+                ], andWeights: [NSNumber(value: 10.0), NSNumber(value: 0.01), NSNumber(value: 100.0)]
+            )
+            
+            enemyAgents.append(enemyAgent)
+            agentSystem.addComponent(enemyAgent)
         }
     }
     
@@ -282,6 +324,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.lastUpdateTime = currentTime
             self.startTime = currentTime
         }
+        deltaTime = currentTime - self.lastUpdateTime
         self.lastUpdateTime = currentTime
         self.elapsedTime = Int(lastUpdateTime - startTime)
         
@@ -300,11 +343,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //            print("stone")
             playerSpeed = 160
         }
-        print(playerSpeed)
+//        print(playerSpeed)
         
         updatePlayer()
+        playerAgent.position = vector2(Float(player.position.x), Float(player.position.y))
+        
+        agentSystem.update(deltaTime: CFTimeInterval(deltaTime * nodeSpeed))
         
         cameraNode.position = player.position
         cameraNode.run(SKAction.move(to: CGPoint(x: player.position.x, y: player.position.y), duration: 0.2))
+    }
+}
+
+extension GameScene: GKAgentDelegate {
+    func agentDidUpdate(_ agent: GKAgent) {
+        if let agent = agent as? GKAgent2D,
+            let index = enemyAgents.firstIndex(where: { $0 == agent }) {
+            let enemy = enemies[index]
+            let position = CGPoint(x: CGFloat(agent.position.x), y: CGFloat(agent.position.y))
+            moveObject(for: enemy, to: position, speed: enemySpeed)
+        }
     }
 }
