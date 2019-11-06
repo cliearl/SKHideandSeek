@@ -191,6 +191,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         goal.position = position[random]
         goal.zPosition = Layer.object
         
+        goal.physicsBody = SKPhysicsBody(rectangleOf: texture.size(), center: CGPoint(x: goal.size.width / 2, y: goal.size.height / 2))
+        goal.physicsBody?.categoryBitMask = PhysicsCategory.goal
+        goal.physicsBody?.isDynamic = false
+        
         self.addChild(goal)
     }
     
@@ -216,6 +220,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             obstacle.position = position
             obstacle.zPosition = Layer.object
+            obstacle.physicsBody = SKPhysicsBody(rectangleOf: texture.size())
+            obstacle.physicsBody?.isDynamic = false
             
             obstacle.lightingBitMask = 1
             obstacle.shadowCastBitMask = 1
@@ -250,6 +256,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         player.physicsBody = SKPhysicsBody(texture: texture, size: texture.size())
         player.physicsBody?.categoryBitMask = PhysicsCategory.player
+        player.physicsBody?.contactTestBitMask = PhysicsCategory.enemy | PhysicsCategory.goal
         
         self.addChild(player)
         
@@ -330,7 +337,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 //        touch = touches.first?.location(in: self)
 //    }
-//    
+//
 //    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
 //        touch = touches.first?.location(in: self)
 //    }
@@ -407,6 +414,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         cameraNode.position = player.position
         cameraNode.run(SKAction.move(to: CGPoint(x: player.position.x, y: player.position.y), duration: 0.2))
+    }
+    
+    // MARK: - 게임 더 꾸미기
+    func didBegin(_ contact: SKPhysicsContact) {
+        var targetBody = SKPhysicsBody()
+        
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            targetBody = contact.bodyB
+        } else {
+            targetBody = contact.bodyA
+        }
+        
+        if targetBody.categoryBitMask == PhysicsCategory.enemy {
+            print("touch enemy")
+        }
+        
+        if targetBody.categoryBitMask == PhysicsCategory.goal {
+            print("touch goal")
+        }
     }
 }
 

@@ -24,6 +24,7 @@ struct Layer {
 struct PhysicsCategory {
     static let player: UInt32 = 0x1 << 0  // 1
     static let enemy: UInt32 = 0x1 << 1 // 2
+    static let goal: UInt32 = 0x1 << 2 // 4
 }
 
 struct Sound {
