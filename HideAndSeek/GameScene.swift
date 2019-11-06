@@ -9,6 +9,11 @@
 import SpriteKit
 import GameplayKit
 
+enum GameState {
+    case playing
+    case gameover
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: - 초기 설정
@@ -37,6 +42,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     var touch: CGPoint? = nil
     var joystick = TLAnalogJoystick(withDiameter: 300)
+    var gameState = GameState.playing
     
     // 에이전트 시스템 가동용 컨테이너
     let agentSystem = GKComponentSystem(componentClass: GKAgent2D.self)
@@ -277,7 +283,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         torchLight.position = CGPoint(x: -20, y: -30)
         torchLight.zPosition = Layer.light
         torchLight.falloff = 2
-        torchLight.isEnabled = false
+//        torchLight.isEnabled = false
         player.addChild(torchLight)
         
         playerAgent.position = vector2(Float(player.position.x), Float(player.position.y))
@@ -285,7 +291,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func createEnemy() {
-        if enemies.count < 1 {
+        if enemies.count < 20 {
             let texture = SpriteAtlas.textureNamed("enemy")
             let enemy = SKSpriteNode(texture: texture)
             
@@ -324,7 +330,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 GKGoal(toWander: 1.0),
                 GKGoal(toSeekAgent: playerAgent),
                 GKGoal(toAvoid: polygonObstacles, maxPredictionTime: 0.1)
-                ], andWeights: [NSNumber(value: 10.0), NSNumber(value: 0.01), NSNumber(value: 100.0)]
+                ], andWeights: [NSNumber(value: 10.0), NSNumber(value: 0.1), NSNumber(value: 100.0)]
             )
             
             enemyAgents.append(enemyAgent)
@@ -418,21 +424,55 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: - 게임 더 꾸미기
     func didBegin(_ contact: SKPhysicsContact) {
-        var targetBody = SKPhysicsBody()
+        if gameState == .playing {
+            var targetBody = SKPhysicsBody()
+            
+            if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+                targetBody = contact.bodyB
+            } else {
+                targetBody = contact.bodyA
+            }
+            
+            if targetBody.categoryBitMask == PhysicsCategory.enemy {
+//                print("touch enemy")
+                gameover(clear: false)
+            }
+            
+            if targetBody.categoryBitMask == PhysicsCategory.goal {
+//                print("touch goal")
+                gameover(clear: true)
+            }
+        }
+    }
+    
+    func gameover(clear: Bool) {
+        gameState = .gameover
         
-        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
-            targetBody = contact.bodyB
-        } else {
-            targetBody = contact.bodyA
+        enemyTimer.invalidate()
+        
+        if clear {
+            saveHighscore()
         }
         
-        if targetBody.categoryBitMask == PhysicsCategory.enemy {
-            print("touch enemy")
+        let gameoverScene = GameoverScene(size: size, clear: clear, elapsedTime: elapsedTime)
+        let transition = SKTransition.doorsCloseHorizontal(withDuration: 0.1)
+        gameoverScene.scaleMode = .aspectFill
+        view?.presentScene(gameoverScene, transition: transition)
+    }
+    
+    func saveHighscore() {
+        let userDefaults = UserDefaults.standard
+        var importValue = Array(repeating: "999", count: 5)
+        if let x = userDefaults.stringArray(forKey: "highscore") {
+            importValue = x.map { $0 }
         }
         
-        if targetBody.categoryBitMask == PhysicsCategory.goal {
-            print("touch goal")
-        }
+        var highscore = importValue.map { Int($0)! }
+        highscore.append(elapsedTime)
+        highscore = highscore.sorted(by: <)
+        
+        userDefaults.set(highscore[..<5].map { String($0) }, forKey: "highscore")
+        userDefaults.synchronize()
     }
 }
 

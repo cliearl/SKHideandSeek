@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6062DC66237264B000995839 /* TLAnalogJoystick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6062DC65237264B000995839 /* TLAnalogJoystick.swift */; };
+		6062DC68237281D900995839 /* GameoverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6062DC67237281D900995839 /* GameoverScene.swift */; };
 		607AC811236FE08F00A099D6 /* bgm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 607AC80F236FE08F00A099D6 /* bgm.mp3 */; };
 		607AC812236FE08F00A099D6 /* enemy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 607AC810236FE08F00A099D6 /* enemy.mp3 */; };
 		60BA3E632359564200E9CAA5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BA3E622359564200E9CAA5 /* AppDelegate.swift */; };
@@ -24,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		6062DC65237264B000995839 /* TLAnalogJoystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TLAnalogJoystick.swift; sourceTree = "<group>"; };
+		6062DC67237281D900995839 /* GameoverScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameoverScene.swift; sourceTree = "<group>"; };
 		607AC80F236FE08F00A099D6 /* bgm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bgm.mp3; sourceTree = "<group>"; };
 		607AC810236FE08F00A099D6 /* enemy.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = enemy.mp3; sourceTree = "<group>"; };
 		60BA3E5F2359564200E9CAA5 /* HideAndSeek.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HideAndSeek.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,6 +94,7 @@
 				60BA3E742359564300E9CAA5 /* Info.plist */,
 				60BA3E7C2359628100E9CAA5 /* Constants.swift */,
 				6062DC65237264B000995839 /* TLAnalogJoystick.swift */,
+				6062DC67237281D900995839 /* GameoverScene.swift */,
 			);
 			path = HideAndSeek;
 			sourceTree = "<group>";
@@ -174,6 +177,7 @@
 			files = (
 				60BA3E692359564200E9CAA5 /* GameScene.swift in Sources */,
 				60BA3E6B2359564200E9CAA5 /* GameViewController.swift in Sources */,
+				6062DC68237281D900995839 /* GameoverScene.swift in Sources */,
 				60BA3E632359564200E9CAA5 /* AppDelegate.swift in Sources */,
 				6062DC66237264B000995839 /* TLAnalogJoystick.swift in Sources */,
 				60BA3E7D2359628100E9CAA5 /* Constants.swift in Sources */,
