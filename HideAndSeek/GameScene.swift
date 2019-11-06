@@ -36,6 +36,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     var touch: CGPoint? = nil
+    var joystick = TLAnalogJoystick(withDiameter: 300)
     
     // 에이전트 시스템 가동용 컨테이너
     let agentSystem = GKComponentSystem(componentClass: GKAgent2D.self)
@@ -58,6 +59,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupCamera()
         setupTimeLabel()
         setupRule()
+        setupJoystick()
         createGoal()
         createPlayer()
         createObstacles()
@@ -68,6 +70,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    
+    // MARK: - 객체 셋업
     func setupMap() {
         gridMap.position = CGPoint(x: size.width / 2, y: size.height / 2)
         self.addChild(gridMap)
@@ -150,6 +154,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             GKRule(predicate: NSPredicate(format: "$enemyCount > 20"), retractingFact: NSString(string: "enemySpeed"), grade: 0.2)
             ]
         )
+    }
+    
+    func setupJoystick() {
+        joystick.baseImage = UIImage(named: "jSubstrate")
+        joystick.handleImage = UIImage(named: "jStick")
+        joystick.position = CGPoint(x: 0, y: -800)
+        joystick.zPosition = Layer.upper
+        cameraNode.addChild(joystick)
+        
+        self.touch = cameraNode.position
+        
+        // touches 콜백 대체
+        joystick.on(.begin) { [weak self] _ in
+            self?.touch?.x = (self?.player.position.x)! + (self?.joystick.velocity.x)!
+            self?.touch?.y = (self?.player.position.y)! + (self?.joystick.velocity.y)!
+        }
+        
+        joystick.on(.move) { [weak self] _ in
+            self?.touch?.x = (self?.player.position.x)! + (self?.joystick.velocity.x)!
+            self?.touch?.y = (self?.player.position.y)! + (self?.joystick.velocity.y)!
+        }
     }
     
     func createGoal() {
@@ -302,13 +327,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     // MARK: - 객체 움직임
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touch = touches.first?.location(in: self)
-    }
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touch = touches.first?.location(in: self)
-    }
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        touch = touches.first?.location(in: self)
+//    }
+//    
+//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        touch = touches.first?.location(in: self)
+//    }
     
     func updatePlayer() {
         guard let touchPosition = touch else { return }
